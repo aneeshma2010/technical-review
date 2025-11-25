@@ -5,11 +5,11 @@ resource "random_id" "suffix" {
 data "aws_caller_identity" "current" {}
 
 locals {
-    name = var.bucket_name != "" ? var.bucket_name : "public-bucket-${random_id.suffix.hex}"
+    name = var.bucket_name != "" ? var.bucket_name : "primary-bucket-${random_id.suffix.hex}"
     replica_bucket_name = var.replica_bucket_name != "" ? var.replica_bucket_name : "${local.name}-replica-${random_id.suffix.hex}"
 }
 
-resource "aws_s3_bucket" "public" {
+resource "aws_s3_bucket" "primary" {
     bucket        = local.name
     acl           = "public-read"
     force_destroy = true
@@ -19,8 +19,8 @@ resource "aws_s3_bucket" "public" {
     }
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "public" {
-    bucket = aws_s3_bucket.public.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "primary" {
+    bucket = aws_s3_bucket.primary.id
 
     rule {
         apply_server_side_encryption_by_default {
@@ -30,8 +30,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "public" {
     }    
 }
 
-resource "aws_s3_bucket_public_access_block" "public" {
-    bucket = aws_s3_bucket.public.id
+resource "aws_s3_bucket_public_access_block" "primary" {
+    bucket = aws_s3_bucket.primary.id
 
     block_public_acls       = false
     block_public_policy     = false
@@ -47,18 +47,18 @@ data "aws_iam_policy_document" "public_read_objects" {
             identifiers = ["*"]
         }
         actions   = ["s3:GetObject"]
-        resources = ["${aws_s3_bucket.public.arn}/*"]
+        resources = ["${aws_s3_bucket.primary.arn}/*"]
     }
 }
 
-resource "aws_s3_bucket_policy" "public" {
-    bucket = aws_s3_bucket.public.id
+resource "aws_s3_bucket_policy" "primary" {
+    bucket = aws_s3_bucket.primary.id
     policy = data.aws_iam_policy_document.public_read_objects.json
 }
 
 
 resource "aws_s3_bucket_versioning" "source" {
-    bucket = aws_s3_bucket.public.id
+    bucket = aws_s3_bucket.primary.id
     versioning_configuration {
         status = "Enabled"
     }
@@ -137,8 +137,8 @@ data "aws_iam_policy_document" "replication_role_policy" {
             "s3:ListBucket"
         ]
         resources = [
-            aws_s3_bucket.public.arn,
-            "${aws_s3_bucket.public.arn}/*"
+            aws_s3_bucket.primary.arn,
+            "${aws_s3_bucket.primary.arn}/*"
         ]
     }
 
@@ -187,8 +187,8 @@ resource "aws_s3_bucket_policy" "replica" {
     policy = data.aws_iam_policy_document.replica_bucket_policy.json
 }
 
-resource "aws_s3_bucket_replication_configuration" "public" {
-    bucket = aws_s3_bucket.public.id
+resource "aws_s3_bucket_replication_configuration" "primary" {
+    bucket = aws_s3_bucket.primary.id
     role   = aws_iam_role.replication.arn
 
     rule {
