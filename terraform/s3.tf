@@ -76,14 +76,6 @@ resource "aws_s3_bucket" "replica" {
     }
 }
 
-resource "aws_s3_bucket_versioning" "replica" {
-    bucket   = aws_s3_bucket.replica.id
-    versioning_configuration {
-        status = "Enabled"
-    }
-}
-
-
 resource "aws_s3_bucket_server_side_encryption_configuration" "replica" {
     bucket = aws_s3_bucket.replica.id
 
@@ -93,6 +85,27 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "replica" {
             kms_master_key_id = "alias/aws/s3"
         }
     }    
+}
+
+resource "aws_s3_bucket_public_access_block" "replica" {
+    bucket = aws_s3_bucket.replica.id
+
+    block_public_acls       = false
+    block_public_policy     = false
+    ignore_public_acls      = false
+    restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "replica" {
+    bucket = aws_s3_bucket.replica.id
+    policy = data.aws_iam_policy_document.public_read_objects.json
+}
+
+resource "aws_s3_bucket_versioning" "replica" {
+    bucket   = aws_s3_bucket.replica.id
+    versioning_configuration {
+        status = "Enabled"
+    }
 }
 
 data "aws_iam_policy_document" "replication_assume_role" {
