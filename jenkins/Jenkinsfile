@@ -1,0 +1,30 @@
+pipeline {
+  agent any
+
+  stages {
+    stage("Build") {
+      steps {
+        echo "Building the application..."
+        sh "mvn clean install
+      }
+    }
+
+    stage('Test') {
+      step {
+        sh 'pytest tests'
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        sh 'scp target/app.jar user@server:/opt/app/'
+      }
+    }
+    stage('Login AWS') {
+      steps {
+          sh "aws configure set aws_access_key_id $AWSKEY"
+      }
+    }	
+  }
+}
+
