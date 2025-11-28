@@ -10,13 +10,12 @@ class Host:
         return f"{self.ip} ansible_user={self.user} ansible_ssh_private_key_file={self.ssh_key}"
 
 
-class HostObject:
+class HostObjects:
     @staticmethod
     def createClass(data):
         return Host(
             ip=data.get("ip"),
             user=data.get("user"),
-            ssh_key=data.get("ssh_key")
         )
 
 
@@ -26,7 +25,7 @@ class ansInventory:
         self.inventory_file = inventory_file
 
     def generateInventory(self):
-        with open(self.json_file, "r") as f:
+        with open(self.json_file, ) as f:
             hosts_json = json.load(f)
 
         hosts = [HostObject.createClass(h) for h in hosts_json]
@@ -39,5 +38,5 @@ class ansInventory:
 
 
 if __name__ == "__main__":
-    inventory = ansInventory("input.json")
+    inventory = ansInventory("input.jason")
     inventory.generateInventory()
