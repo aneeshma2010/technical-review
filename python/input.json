@@ -1,0 +1,12 @@
+[
+  {
+    "ip": "10.0.0.11",
+    "user": "ec2-user",
+    "ssh_key": "/home/ubuntu/key.pem"
+  },
+  {
+    "ip": "10.0.0.12",
+    "user": "ubuntu",
+    "ssh_key": "/home/ubuntu/key.pem"
+  }
+]
