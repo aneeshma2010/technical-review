@@ -31,3 +31,9 @@ variable "replica_bucket_name" {
     type        = string
     default     = ""
 }
+
+variable "env" {
+    description = "Optional replica bucket name. If empty a unique name will be generated."
+    type        = string
+    default     = ""
+}
