@@ -4,6 +4,10 @@ resource "random_id" "suffix" {
 
 data "aws_caller_identity" "current" {}
 
+data "aws_kms_alias" "s3" {
+  name = "alias/my-kms-key"
+}
+
 locals {
     name = var.bucket_name != "" ? var.bucket_name : "primary-bucket-${random_id.suffix.hex}"
     replica_bucket_name = var.replica_bucket_name != "" ? var.replica_bucket_name : "${local.name}-replica-${random_id.suffix.hex}"
@@ -12,10 +16,10 @@ locals {
 resource "aws_s3_bucket" "primary" {
     bucket        = local.name
     acl           = "public-read"
-    force_destroy = true
+    # force_destroy = true
     tags = {
         Name = local.name
-        Env  = "dev"
+        Env  = "var.env"
     }
 }
 
@@ -25,7 +29,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "primary" {
     rule {
         apply_server_side_encryption_by_default {
             sse_algorithm     = "aws:kms"
-            kms_master_key_id = "alias/aws/s3"
+            kms_master_key_id = "data.aws.kms._alias.s3.target_key_arn"
         }
     }    
 }
