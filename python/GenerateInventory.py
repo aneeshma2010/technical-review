@@ -1,4 +1,7 @@
+import json
 
+def load_json_inventory(filename="input.json"):
+    
 class Host:
     def __init__(self, ip, user, ssh_key):
         self.ip = ip
