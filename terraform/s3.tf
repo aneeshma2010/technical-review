@@ -25,7 +25,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "primary" {
     rule {
         apply_server_side_encryption_by_default {
             sse_algorithm     = "aws:kms"
-            kms_master_key_id = "alias/aws/s3"
+            kms_master_key_id = "alias/aws/s3" ## aws_kms_key should be used
         }
     }    
 }
@@ -82,7 +82,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "replica" {
     rule {
         apply_server_side_encryption_by_default {
             sse_algorithm     = "aws:kms"
-            kms_master_key_id = "alias/aws/s3"
+            kms_master_key_id = "alias/aws/s3"  ## aws_kms_key should be used
         }
     }    
 }
