@@ -1,4 +1,4 @@
-
+import json
 class Host:
     def __init__(self, ip, user, ssh_key):
         self.ip = ip
@@ -37,5 +37,5 @@ class ansInventory:
 
 
 if __name__ == "__main__":
-    inventory = ansInventory("input.jason")
+    inventory = ansInventory("input.jason")  # input.json typo here
     inventory.generateInventory()
