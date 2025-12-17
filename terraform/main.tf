@@ -14,3 +14,5 @@ provider "aws" {
     profile = var.aws_profile
 }
 
+# providers and version shouldn't be in main.tf.
+# best to add them under providers.tf/version.tf 
