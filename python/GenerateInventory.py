@@ -19,7 +19,7 @@ class HostObjects:
 
 
 class ansInventory:
-    def __init__(self, json_file, inventory_file="inventory.ini"):
+    def __init__(self, json_file, inventory_file="inventory.ini"):       
         self.json_file = json_file
         self.inventory_file = inventory_file
 
@@ -37,5 +37,5 @@ class ansInventory:
 
 
 if __name__ == "__main__":
-    inventory = ansInventory("input.jason")
+    inventory = ansInventory("input.json")         //input must JSON file
     inventory.generateInventory()
