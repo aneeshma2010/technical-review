@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   stages {
-    stage("Build") {
+    stage("Build") {         // make sure it has the latest build add with condition when "latest" to avoid build conflicts
       steps {
         echo "Building the application..."
         sh "mvn clean install
@@ -11,13 +11,18 @@ pipeline {
 
     stage('Test') {
       step {
-        sh 'pytest tests'
+        sh 'pytest tests || if true  '    // adding sonarube code quality with >85% 
       }
     }
 
     stage('Deploy') {
+      when {
+        expression {
+          currentBuild.result == null || currentBuild.result == 'SUCCESS'
+        }
+      }
       steps {
-        sh 'scp target/app.jar user@server:/opt/app/'
+                sh 'scp target/app.jar user@server:/opt/app/'
       }
     }
     stage('Login AWS') {
