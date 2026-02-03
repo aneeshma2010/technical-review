@@ -11,12 +11,17 @@ locals {
 
 resource "aws_s3_bucket" "primary" {
     bucket        = local.name
-    acl           = "public-read"
+    acl           = "private"
     force_destroy = true
     tags = {
         Name = local.name
         Env  = "dev"
     }
+}
+
+resource "aws_kms_key" "mykey" {
+  description             = "This key is used to encrypt bucket objects"
+  deletion_window_in_days = 10
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "primary" {
@@ -25,7 +30,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "primary" {
     rule {
         apply_server_side_encryption_by_default {
             sse_algorithm     = "aws:kms"
-            kms_master_key_id = "alias/aws/s3"
+            kms_master_key_id = "alias/aws/s3" //aws_kms_key.mykey.arn
         }
     }    
 }
@@ -33,10 +38,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "primary" {
 resource "aws_s3_bucket_public_access_block" "primary" {
     bucket = aws_s3_bucket.primary.id
 
-    block_public_acls       = false
-    block_public_policy     = false
-    ignore_public_acls      = false
-    restrict_public_buckets = false
+    block_public_acls       = true
+    block_public_policy     = true
+    ignore_public_acls      = true
+    restrict_public_buckets = true
 }
 
 data "aws_iam_policy_document" "public_read_objects" {
@@ -90,10 +95,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "replica" {
 resource "aws_s3_bucket_public_access_block" "replica" {
     bucket = aws_s3_bucket.replica.id
 
-    block_public_acls       = false
-    block_public_policy     = false
-    ignore_public_acls      = false
-    restrict_public_buckets = false
+    block_public_acls       = true
+    block_public_policy     = true
+    ignore_public_acls      = true
+    restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_policy" "replica" {
