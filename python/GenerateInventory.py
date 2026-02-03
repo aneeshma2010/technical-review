@@ -25,7 +25,7 @@ class ansInventory:
         self.inventory_file = inventory_file
 
     def generateInventory(self):
-        with open(self.json_file, ) as f:
+        with open(self.json_file, r) as f:
             hosts_json = json.load(f)
 
         hosts = [HostObjects.createClass(h) for h in hosts_json]
