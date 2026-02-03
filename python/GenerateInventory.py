@@ -1,3 +1,4 @@
+import json
 
 class Host:
     def __init__(self, ip, user, ssh_key):
@@ -27,7 +28,7 @@ class ansInventory:
         with open(self.json_file, ) as f:
             hosts_json = json.load(f)
 
-        hosts = [HostObject.createClass(h) for h in hosts_json]
+        hosts = [HostObjects.createClass(h) for h in hosts_json]
 
         with open(self.inventory_file, "w") as f:
             for host in hosts:
@@ -37,5 +38,5 @@ class ansInventory:
 
 
 if __name__ == "__main__":
-    inventory = ansInventory("input.jason")
+    inventory = ansInventory("input.json")
     inventory.generateInventory()
