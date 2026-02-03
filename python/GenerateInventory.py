@@ -16,6 +16,7 @@ class HostObjects:
         return Host(
             ip=data.get("ip"),
             user=data.get("user"),
+            ssh_key=data.get(ssh_key"),
         )
 
 
