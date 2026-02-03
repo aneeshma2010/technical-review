@@ -5,7 +5,7 @@ pipeline {
     stage("Build") {
       steps {
         echo "Building the application..."
-        sh "mvn clean install
+        sh "mvn clean install"
       }
     }
 
@@ -22,9 +22,20 @@ pipeline {
     }
     stage('Login AWS') {
       steps {
-          sh "aws configure set aws_access_key_id $AWSKEY"
+            withCredentials([
+                        [$class: 'AmazonWebServicesCredentialsBinding',
+                         credentialsId: 'my-aws-creds-id', // Specify the credentials ID which is from jenkins Global configuration
+                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
+                    ])
+            sh 'aws s3 ls'     
       }
     }	
+  }
+  post { 
+        always { 
+            cleanWs()
+        }
   }
 }
 
